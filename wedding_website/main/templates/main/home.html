@@ -1,0 +1,36 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Home - Alice and Bob{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="text-center">
+        <h1 class="mb-4">Welcome to the wedding website of Alice and Bob!</h1>
+        <p class="lead">
+            We will be married on <strong>Saturday, June 15, 2024</strong>, at the Encrypted Gardens in Cryptoville. 
+            Please RSVP as soon as possible to help us finalize our plans.
+        </p>
+        
+        <a href="{% url 'rsvp' %}" class="btn btn-primary">RSVP</a>
+    </div>
+
+    <div class="mt-5">
+        <h2 class="mb-4">Alice & Bob: A Love Story</h2>
+        <p>
+            Alice and Bob first met at a cryptography conference in 2018. Their shared passion for secure communication quickly turned into a deep connection. 
+            Over the years, they've worked together on numerous projects, from decoding puzzles to encrypting their love in every way possible.
+        </p>
+        <p>
+            In <strong>2022</strong>, Bob proposed to Alice in the most secure way imaginable—by encrypting his proposal in a custom algorithm only Alice could decode. 
+            Needless to say, she cracked the code and said yes!
+        </p>
+        <p>
+            Together, Alice and Bob have built a life full of trust, laughter, and a shared love for solving problems. They are excited to celebrate their next big 
+            adventure with all of you.
+        </p>
+        <p>
+            Whether you can attend or not, thank you for being part of their story. Your support has been the key to their happiness.
+        </p>
+    </div>
+</div>
+{% endblock %}

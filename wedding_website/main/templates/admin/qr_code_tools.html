@@ -1,0 +1,27 @@
+{% extends "admin/change_list.html" %}
+
+{% load i18n admin_urls %}
+
+{% block object-tools %}
+<div class="object-tools">
+    <ul>
+        <li>
+            <a href="{% url 'admin:create_all_qr_codes' %}">Create All QR Codes</a>
+        </li>
+        <li>
+            <a href="{% url 'admin:download_qr_codes' %}">Download QR Codes</a>
+        </li>
+        <li>
+            <a href="{% url 'admin:delete_qr_codes' %}">Delete QR Codes</a>
+        </li>
+        {% if has_add_permission %}
+        <li>
+            {% url cl.opts|admin_urlname:'add' as add_url %}
+            <a href="{% add_preserved_filters add_url is_popup to_field %}" class="addlink">
+            {% blocktranslate with cl.opts.verbose_name as name %}Add {{ name }}{% endblocktranslate %}
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</div>
+{% endblock %}

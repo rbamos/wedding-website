@@ -1,0 +1,25 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Guest List{% endblock %}
+
+{% block content %}
+<h2>Your Guests</h2>
+{% if guests %}
+    <ul>
+        {% for guest in guests %}
+            <li>{{ guest.name }} -
+                {% if guest.attending %}
+                    Attending
+                {% else %}
+                    'Not Attending'
+                {% endif %}
+                {% if guest.dietary_restrictions %}
+                    (Dietary Preferences: {{ guest.dietary_restrictions }})
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>You have no guests added yet.</p>
+{% endif %}
+{% endblock %}

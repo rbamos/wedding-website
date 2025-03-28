@@ -1,0 +1,174 @@
+#!/bin/bash
+# -*- mode: sh -*-
+
+# Start SSM
+sudo dnf install -y amazon-ssm-agent
+sudo systemctl start amazon-ssm-agent
+sudo systemctl enable amazon-ssm-agent
+
+# Update and install necessary packages
+sudo dnf update -y
+sudo dnf install -y git certbot aws-cli jq cronie postgresql15 tmux
+sudo dnf install -y python3 python3-devel python3-pip
+sudo dnf install -y httpd mod_ssl httpd-devel python-certbot-apache
+
+
+
+# Amazon Linux 2023 doesn't support mod_wsgi installation from a package manager
+# This workaround is from https://github.com/amazonlinux/amazon-linux-2023/issues/267#issuecomment-2238559423
+cd /root
+python3 -m venv .venv 
+source .venv/bin/activate 
+pip install wheel
+pip install mod_wsgi==5.0.0
+ln -sf /root/.venv/lib64/python3*/site-packages/mod_wsgi/server/mod_wsgi-py*.so /etc/httpd/modules/mod_wsgi.so
+echo "LoadModule wsgi_module modules/mod_wsgi.so" > /etc/httpd/conf.modules.d/mod_wsgi.conf
+
+
+# # Install libheif
+# # Another surprising thing for Amazon Linux 2023 to not include
+
+# # # First compilation tools
+# sudo dnf groupinstall "Development Tools" -y
+# sudo dnf install -y gcc-c++ cmake git libjpeg-turbo-devel libpng-devel
+
+# # Then libde265
+# git clone https://github.com/strukturag/libde265.git
+# cd libde265
+# mkdir build && cd build
+# cmake ..
+# make
+# cd ../..
+
+# # Then libheif
+# git clone https://github.com/strukturag/libheif.git
+# cd libheif
+# mkdir build
+# cd build
+# cmake --preset=release ..
+# make
+# cd ../..
+
+
+# Fetch secrets from AWS Secrets Manager
+secrets=$(aws secretsmanager get-secret-value --secret-id "${environment_secrets}" --query SecretString --output text)
+if [ $? -ne 0 ]; then
+  echo "Failed to fetch secrets from AWS Secrets Manager"
+  exit 1
+fi
+
+# Export secrets as environment variables
+echo "$secrets" | jq -r 'to_entries | .[] | @sh "export \(.key)=\(.value)"' >> /etc/secrets
+echo "$secrets" > /etc/secrets.json
+source /etc/secrets
+
+# Set up SSH for private GitHub repository access
+mkdir ~/.ssh/
+cat << EOF > ~/.ssh/config
+Host github.com
+    Hostname github.com
+    StrictHostKeyChecking no
+EOF
+
+echo "$DEPLOY_KEY" | tr -d '\r' > ~/.ssh/id_ed25519
+chmod 600 ~/.ssh/id_ed25519
+
+# Also set up for ec2-user
+mkdir ~ec2-user/.ssh/
+cat << EOF > ~ec2-user/.ssh/config
+Host github.com
+    Hostname github.com
+    StrictHostKeyChecking no
+EOF
+echo "$DEPLOY_KEY" | tr -d '\r' > ~ec2-user/.ssh/id_ed25519
+chmod 600 ~ec2-user/.ssh/id_ed25519
+
+mkdir -p /var/www
+cd /var/www
+
+# Clone the Django project repository
+git clone "$REPOSITORY_URL"
+
+# Install dependencies and set up Django
+cd WeddingWebsite
+python3 -m venv .venv 
+source .venv/bin/activate 
+pip install wheel
+pip3 install -r requirements.txt
+
+# Apply Django migrations
+cd wedding_website
+python manage.py migrate
+
+# Collect static files
+python manage.py collectstatic --noinput
+
+# Fetch the most recent backup from S3 and restore it
+LATEST_BACKUP=$(aws s3 ls s3://$SQLITE_BACKUP_BUCKET/backups/ | sort | tail -n 1 | awk '{print $4}')
+if [ -n "$LATEST_BACKUP" ]; then
+  aws s3 cp s3://$SQLITE_BACKUP_BUCKET/backups/$LATEST_BACKUP /var/www/WeddingWebsite/wedding_website/db.sqlite3
+fi
+
+# Update ownership
+sudo chown -R apache:apache /var/www/WeddingWebsite
+sudo chmod -R 755 /var/www/WeddingWebsite
+
+# Configure Apache for Django using mod_wsgi
+sudo cat << EOF > /etc/httpd/conf.d/django.conf
+<VirtualHost *:80>
+    ServerName "$${HOSTNAME}"
+
+    DocumentRoot /var/www/WeddingWebsite
+
+    Alias /static /var/www/static
+    <Directory /var/www/static>
+        Require all granted
+    </Directory>
+
+    <Directory /var/www/WeddingWebsite/wedding_website>
+        <Files wsgi.py>
+            Require all granted
+        </Files>
+    </Directory>
+
+    WSGIDaemonProcess "$${HOSTNAME}_80" python-home=/var/www/WeddingWebsite/.venv python-path=/var/www/WeddingWebsite/wedding_website
+    WSGIProcessGroup "$${HOSTNAME}_80"
+    WSGIScriptAlias / /var/www/WeddingWebsite/wedding_website/wedding_website/wsgi.py process-group="$${HOSTNAME}_80"
+</VirtualHost>
+EOF
+
+# There's a bad interaction between Certbot and WSGI that causes a failure if we temporarily comment out this field
+# if we don't, Certbot duplicates this field and fails stating that there's a duplicate of the field
+sed -i '/WSGIDaemonProcess/s/^/## /; /WSGIProcessGroup/s/^/## /' /etc/httpd/conf.d/django.conf
+
+# The rate limit for LetsEncrypt is 5 requests every 7 days, renewing every 34 hours
+# This means ANY active development will quickly exceed the rate limit
+# Instead, we can point to LE's staging server; this won't give us a real cert, but it will let us diagnose issues
+if [[ "$STAGING_CERT" == "true" ]] ; then
+  staging_flag="--server https://acme-staging-v02.api.letsencrypt.org/directory"
+else
+  staging_flag=""
+fi
+
+# Obtain SSL certificate using Certbot
+# DNS propogation may not be immediate; repeat until success
+while ! certbot $staging_flag --apache -d $HOSTNAME --non-interactive --agree-tos --email admin@"$HOSTNAME"; do
+  sleep 60
+done
+
+# Remove comments
+sed -i -r 's/## ( +WSGI)/\1/' /etc/httpd/conf.d/django.conf
+sed -i -r 's/## ( +WSGI)/\1/; s/'"$HOSTNAME"'_80/'"$HOSTNAME"'_443/' /etc/httpd/conf.d/django-le-ssl.conf
+
+# Restart Apache to apply configuration
+sudo systemctl enable httpd
+sudo systemctl restart httpd
+
+# Set up a cron job for certificate renewal
+echo "0 12 * * * root certbot renew --quiet && systemctl reload httpd" | sudo tee /etc/cron.d/certbot-renew
+
+# Set up a cron job for the database backup to run hourly
+echo "0 * * * * root /var/www/WeddingWebsite/bin/backup_db.sh" | sudo tee /etc/cron.d/backup_db
+
+# Set up hosted zone repair on reboot
+echo "@reboot /var/www/WeddingWebsite/bin/update-hosted-zone.sh" | sudo tee /etc/cron.d/updated_hosted_zone

@@ -1,0 +1,72 @@
+{% extends 'main/base.html' %}
+{% load custom_filters %}
+
+{% block title %}RSVP{% endblock %}
+
+{% block javascript %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const attendingCheckboxes = document.querySelectorAll('input[type="checkbox"][name$="attending"]');
+    attendingCheckboxes.forEach(function(checkbox) {
+        checkbox.addEventListener('change', function() {
+            const mealSelect = document.querySelector('select[name="' + this.name.replace('attending', 'meal') + '"]');
+            if (this.checked) {
+                mealSelect.disabled = false;
+            } else {
+                mealSelect.disabled = true;
+                mealSelect.value = '';  // Optionally clear the selection when not attending
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
+
+{% block content %}
+<h1>RSVP for {{ request.user.name }}</h1>
+<form method="post" class="rsvp-form">
+    {% csrf_token %}
+    <div class="accordion" id="guestAccordion">
+        {% for guest in guests %}
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading{{ guest.id }}">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ guest.id }}" aria-expanded="true" aria-controls="collapse{{ guest.id }}">
+                    {{ guest.name }}
+                </button>
+            </h2>
+            <div id="collapse{{ guest.id }}" class="accordion-collapse collapse show" aria-labelledby="heading{{ guest.id }}">
+                <div class="accordion-body">
+                    <div class="mb-3">
+                        {{ guest_forms|get_item:guest.id }}
+                    </div>
+                    {% for form in event_invite_forms|get_item:guest.id %}
+                    <div class="mb-3">
+                        <h4>{{ form.instance.event.name }}</h4>
+                        <div class="form-check">
+                            {{ form.attending }}
+                            <label class="form-check-label" for="{{ form.attending.id_for_label }}">Attending</label>
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ form.meal.id_for_label }}" class="form-label">Meal</label>
+                            {{ form.meal }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="card mt-4">
+        <div class="card-body">
+            {{ suggestion_form.suggestion.label_tag }}<br>
+            {{ suggestion_form.suggestion }}
+        </div>
+    </div>
+
+    <div class="mt-4"></div>
+
+    <button class="btn btn-primary" type="submit">Save</button>
+</form>
+{% endblock %}

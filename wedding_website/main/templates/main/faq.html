@@ -1,0 +1,130 @@
+{% extends 'main/base.html' %}
+
+{% block title %}FAQ{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="accordion" id="faqAccordion">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingChildren">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseChildren" aria-expanded="true" aria-controls="collapseChildren">
+                    Are children allowed at the wedding?
+                </button>
+            </h2>
+            <div id="collapseChildren" class="accordion-collapse collapse show" aria-labelledby="headingChildren">
+                <div class="accordion-body">
+                    Children are welcome to attend all events. If you have any questions about your invitation, please contact us.
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingDressCode">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDressCode" aria-expanded="true" aria-controls="collapseDressCode">
+                    What is the dress code?
+                </button>
+            </h2>
+            <div id="collapseDressCode" class="accordion-collapse collapse show" aria-labelledby="headingDressCode">
+                <div class="accordion-body">
+                    The ceremony and reception are formal events. For other gatherings, casual attire is fine.
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingRSVP">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRSVP" aria-expanded="true" aria-controls="collapseRSVP">
+                    How do I RSVP?
+                </button>
+            </h2>
+            <div id="collapseRSVP" class="accordion-collapse collapse show" aria-labelledby="headingRSVP">
+                <div class="accordion-body">
+                    Please RSVP using the form on <a href="{% url 'rsvp' %}">our website</a>. If you encounter any issues, feel free to reach out to us.
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingFoodOptions">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFoodOptions" aria-expanded="true" aria-controls="collapseFoodOptions">
+                    Will there be vegetarian or vegan food options?
+                </button>
+            </h2>
+            <div id="collapseFoodOptions" class="accordion-collapse collapse show" aria-labelledby="headingFoodOptions">
+                <div class="accordion-body">
+                    Yes, we will have vegetarian and vegan options available. Please let us know about any dietary restrictions when you RSVP.
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingPlusOne">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePlusOne" aria-expanded="true" aria-controls="collapsePlusOne">
+                    Can I bring a guest?
+                </button>
+            </h2>
+            <div id="collapsePlusOne" class="accordion-collapse collapse show" aria-labelledby="headingPlusOne">
+                <div class="accordion-body">
+                    If your invitation includes a guest, they are welcome to join. Unfortunately, we cannot accommodate additional guests.
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingStay">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseStay" aria-expanded="true" aria-controls="collapseStay">
+                    Where can I stay?
+                </button>
+            </h2>
+            <div id="collapseStay" class="accordion-collapse collapse show" aria-labelledby="headingStay">
+                <div class="accordion-body">
+                    We have reserved hotel blocks at nearby locations. Visit <a href="{% url 'hotels' %}">our website</a> for more details and booking information.
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingCeremonyTime">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCeremonyTime" aria-expanded="true" aria-controls="collapseCeremonyTime">
+                    What time does the ceremony start?
+                </button>
+            </h2>
+            <div id="collapseCeremonyTime" class="accordion-collapse collapse show" aria-labelledby="headingCeremonyTime">
+                <div class="accordion-body">
+                    The ceremony will begin at 4:00 PM. Please arrive early to find your seat.
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingActivities">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseActivities" aria-expanded="true" aria-controls="collapseActivities">
+                    Are there activities planned for the weekend?
+                </button>
+            </h2>
+            <div id="collapseActivities" class="accordion-collapse collapse show" aria-labelledby="headingActivities">
+                <div class="accordion-body">
+                    Yes, we have planned several activities for the weekend. Check <a href="{% url 'schedule' %}">our website</a> for the full schedule.
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingContact">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseContact" aria-expanded="true" aria-controls="collapseContact">
+                    How can I contact you?
+                </button>
+            </h2>
+            <div id="collapseContact" class="accordion-collapse collapse show" aria-labelledby="headingContact">
+                <div class="accordion-body">
+                    You can reach us via email or phone. Visit the contact section on <a href="{% url 'faq' %}">our website</a> for details.
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingGifts">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseGifts" aria-expanded="true" aria-controls="collapseGifts">
+                    Are gifts necessary?
+                </button>
+            </h2>
+            <div id="collapseGifts" class="accordion-collapse collapse show" aria-labelledby="headingGifts">
+                <div class="accordion-body">
+                    Your presence is the best gift! If you wish to give something, please visit our <a href="{% url 'registry' %}">registry page</a>.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

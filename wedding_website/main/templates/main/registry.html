@@ -1,0 +1,77 @@
+{% extends 'main/base.html' %}
+{% load static %} 
+
+{% block title %} Registry {% endblock %} 
+
+{% block content %}
+<div class="alert alert-info text-center" role="alert">
+  Gifts are completely optional.
+</div>
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5 class="card-title">Contribute to Our Future</h5>
+          <p class="card-text">
+            Your support will help us build our dream home and future together. You can contribute via Zelle or Venmo. Thank you for being part of our journey!
+          </p>
+          <p class="card-text">
+            Zelle (preferred): alice.bob@example.com <br />
+            Venmo: <a href="https://example.com/venmo">@AliceAndBob</a>
+          </p>
+
+          <p>
+            <button
+              class="btn btn-primary"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapseVenmoQR"
+              aria-expanded="false"
+              aria-controls="collapseVenmoQR"
+            >
+              Show Venmo QR Code
+            </button>
+          </p>
+          <div style="min-height: 120px">
+            <div class="collapse collapse-horizontal" id="collapseVenmoQR">
+              <div class="card card-body">
+                <div class="text-center">
+                  <img
+                    src="{% static 'main/img/venmo.png' %}"
+                    class="img-fluid"
+                    alt="QR code for Venmo"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5 class="card-title">Gift Registry</h5>
+          <p class="card-text">
+            For those who prefer to give a physical gift, we’ve created a registry. Feel free to team up for group gifts. You can find our registry at the link below.
+          </p>
+          <div class="card mt-4">
+            <div class="card-body">
+              <h5 class="card-title">Registry Password</h5>
+              <p class="card-text">
+                <strong>secure-love-forever</strong>
+              </p>
+            </div>
+          </div>
+          <a
+            href="https://example.com/registry"
+            class="btn btn-primary mt-4"
+            >Visit Registry</a
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

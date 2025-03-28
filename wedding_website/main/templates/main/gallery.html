@@ -1,0 +1,33 @@
+{% extends 'main/base.html' %}
+
+{% load static %}
+
+{% block header %}
+<link rel="stylesheet" href="{% static 'main/css/gallery.css' %}">
+{% endblock %}
+
+{% block title %}Gallery{% endblock %}
+
+{% block content %}
+<h1>Gallery</h1>
+<div class="grid-container">
+  {% for photo in photos %}
+  <div onclick="openGalleryModal({{ forloop.counter0 }})">
+    <img class="grid-item grid-item-1" src="{{ photo.thumbnail_url }}" alt="{{ photo.description }}">
+    <p>{{ photo.description }}</p>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- The Modal -->
+<div id="gallery_modal" class="gallery_modal">
+    <span class="gallery_modal-close" onclick="closeGalleryModal()">&times;</span>
+    <img class="gallery_modal-content" id="gallery_modalImage" alt="">
+    <p class="gallery_modal-description" id="gallery_modalDescription"></p>
+</div>
+
+
+{{ photos|json_script:"photo-data" }}
+
+<script src="{% static 'main/js/gallery.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,223 @@
+/* main/static/main/css/style.css */
+
+* {
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+
+/* General Styling */
+html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Garamond, Big Caslon, Times New Roman, serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+    color: #333;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column; /* Stack the children vertically */
+    min-height: 100vh; /* Full viewport height */
+}
+
+a {
+    color: #33F;
+}
+
+a:hover {
+    color: #a29bfe;
+}
+
+.login-button {
+    background-color: #a29bfe;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    display: block;
+    width: 200px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Navigation Bar */
+.navbar {
+    background-color: #fff;
+    border-bottom: 2px solid #a29bfe;
+    padding: 10px 20px;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1000;  /* Ensure the navbar is always on top */
+    display: flex;
+    justify-content: center;
+    min-height: 50px;
+}
+
+.navbar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    justify-content: center;
+    flex-grow: 1;
+}
+
+.navbar ul li {
+    margin: 0 15px;
+}
+
+.navbar ul li a {
+    font-weight: bold;
+    padding: 8px 16px;
+}
+
+/* Main Content */
+.container {
+    margin: 80px auto 20px; /* Center the container vertically and horizontally */
+    max-width: 800px;
+    width: 100%; /* Responsive width */
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box; /* Include padding and border in width */
+    flex: 1;  /* Flex-grow to take available space */
+}
+
+
+/* Footer */
+.footer {
+    background-color: #fff;
+    padding: 20px;
+    text-align: center;
+    border-top: 2px solid #a29bfe;
+    width: 100%;
+}
+
+/* RSVP Form */
+.rsvp-form ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.rsvp-form li {
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #f8f8f8; /* Light background for each guest item */
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.rsvp-form label {
+    margin-right: 10px;
+}
+
+.rsvp-form input[type="checkbox"],
+.rsvp-form input[type="text"],
+.rsvp-form select {
+    margin-right: 10px;
+}
+
+.rsvp-form button {
+    background-color: #a29bfe;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.rsvp-form button:hover {
+    background-color: #927ae9; /* Darker shade for hover state */
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .rsvp-form li {
+        padding: 5px;
+    }
+    .rsvp-form button {
+        padding: 8px 16px;
+    }
+}
+
+hr {
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(162, 155, 254, 0.75), rgba(0, 0, 0, 0)); /* Gradient effect */
+    margin: 20px 0; /* Add vertical spacing */
+}
+
+/* Navigation Bar enhancements for mobile */
+.nav-menu {
+    display: flex;
+    justify-content: center; /* Center the menu items on desktop */
+    flex-grow: 1; /* Ensure the menu spans the available space */
+}
+
+.nav-menu a {
+    text-decoration: none;
+    color: #333;
+}
+
+.menu-toggle {
+    display: none;  /* Hidden by default */
+    background: none;
+    border: none;
+    color: #333;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+@media (max-width: 600px) {
+    .menu-toggle {
+        display: block;  /* Show hamburger icon on mobile */
+        position: absolute;
+        top: 10px;
+        right: 20px;
+    }
+
+    .nav-menu {
+        display: none;  /* Hidden by default */
+        position: fixed;  /* Make sure the dropdown is positioned relative to the viewport */
+        top: 50px;  /* Just below the header */
+        left: 0;
+        width: 100%;
+        height: 100vh;  /* Full viewport height to cover the entire screen */
+        background-color: #fff;
+        z-index: 2000;  /* Ensure the dropdown is above other content */
+        border-top: 1px solid #a29bfe;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        overflow-y: auto;  /* Ensure the menu can scroll if content is long */
+    }
+
+    .nav-menu li {
+        width: 100%;
+        text-align: center;
+        padding: 10px 0;
+    }
+
+    .nav-menu li a {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        text-decoration: none;
+        color: #333;
+    }
+
+    .nav-menu li a:hover {
+        background-color: #a29bfe;
+        color: white;
+    }
+}
